@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whistle/api/fft_processor.dart';
 import 'package:whistle/api/play_recorder.dart';
 import 'package:whistle/api/sound_recorder.dart';
 
@@ -31,7 +32,7 @@ class _MainPageState extends State<MainPage> {
             appBar: AppBar(title: Text("Whistle App")),
             body: Center(
                 child: Column(
-              children: [buildStart(), buildPlay()],
+              children: [buildStart(), buildPlay(), buildSpectrogram()],
             ))));
   }
 
@@ -75,5 +76,17 @@ class _MainPageState extends State<MainPage> {
         setState(() {});
       },
     );
+  }
+
+  Widget buildSpectrogram() {
+    return FutureBuilder<String>(
+        future: getSpectrogram(),
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          if (snapshot.hasData) {
+            return Text(snapshot.requireData);
+          } else {
+            return Text("Processando...");
+          }
+        });
   }
 }

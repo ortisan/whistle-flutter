@@ -37,6 +37,8 @@ dependencies:
   permission_handler: ^10.0.0
   audioplayers: ^1.0.1
   path_provider: ^2.0.11
+  fftea: ^1.1.1
+  wav: ^1.1.0
 
 dev_dependencies:
   flutter_test:
