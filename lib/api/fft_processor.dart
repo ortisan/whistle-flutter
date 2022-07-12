@@ -2,8 +2,10 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:fftea/fftea.dart';
 import 'package:fftea/stft.dart';
+import 'package:flutter/material.dart';
 import 'package:wav/wav.dart';
 import 'package:whistle/api/utils.dart';
 
@@ -38,11 +40,11 @@ String _gradient(double power) {
   return levels[index];
 }
 
-Future<String> getSpectrogram() async {
+Future<List<SpectrogramData>> getSpectrogram() async {
   final audioFile = await getAudioFile();
   final exists = await File(audioFile).exists();
   if (!exists) {
-    return "Audio não encontrado...";
+    return <SpectrogramData>[];
   }
 
   final wav = await Wav.readFile(audioFile);
@@ -51,10 +53,12 @@ Future<String> getSpectrogram() async {
   const buckets = 120;
   final stft = STFT(chunkSize, Window.hanning(chunkSize));
   Uint64List? logItr;
-  final StringBuffer sb = StringBuffer();
+  final spec = <SpectrogramData>[];
+  var x= 0;
   stft.run(
     audio,
     (Float64x2List chunk) {
+
       final amp = chunk.discardConjugates().magnitudes();
       logItr ??= _linSpace(amp.length, buckets);
       int i0 = 0;
@@ -66,18 +70,33 @@ Future<String> getSpectrogram() async {
           }
           power /= i1 - i0;
         }
-        sb.write(_gradient(power));
+
+        final spectrogramData = SpectrogramData(
+            freq: i1,
+            magnitude: power,
+            barColor: charts.ColorUtil.fromDartColor(Colors.lightBlue));
+
+        x++;
+        if (x <= 10) {
+          spec.add(spectrogramData);
+        }
+
+
         i0 = i1;
       }
-      sb.write('\n');
+
     },
     chunkSize ~/ 2,
   );
 
-  // final spectrogram = <Float64List>[];
-  // stft.run(audio, (Float64x2List freq) {
-  //   spectrogram.add(freq.discardConjugates().magnitudes());
-  // });
+  return spec;
+}
 
-  return sb.toString();
+class SpectrogramData {
+  int freq;
+  double magnitude;
+  charts.Color barColor;
+
+  SpectrogramData(
+      {required this.freq, required this.magnitude, required this.barColor});
 }
