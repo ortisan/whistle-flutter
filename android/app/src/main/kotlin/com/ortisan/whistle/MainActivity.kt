@@ -1,4 +1,4 @@
-package com.example.whistle
+package com.ortisan.whistle
 
 import io.flutter.embedding.android.FlutterActivity
 

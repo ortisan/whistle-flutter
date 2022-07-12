@@ -1,9 +1,9 @@
 import 'package:flutter_sound_lite/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-final pathToSaveFile = "whistle.aac";
+import 'package:whistle/api/utils.dart';
 
 class SoundRecorder {
+
   FlutterSoundRecorder? _audioRecorder;
 
   bool get isRecording => _audioRecorder!.isRecording;
@@ -23,7 +23,8 @@ class SoundRecorder {
   }
 
   Future _record() async {
-    await _audioRecorder!.startRecorder(toFile: pathToSaveFile);
+    final audioFile = await getAudioFile();
+    await _audioRecorder!.startRecorder(toFile: audioFile);
   }
 
   Future _stop() async {
