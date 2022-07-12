@@ -11,7 +11,12 @@ class PlayRecorder {
     isPlaying = true;
   }
 
-  Future stop() async {
+  Future _pause() async {
+    await _player.pause();
+    isPlaying = false;
+  }
+
+  Future _stop() async {
     await _player.stop();
     isPlaying = false;
   }
@@ -20,7 +25,7 @@ class PlayRecorder {
     if (!isPlaying) {
       await _play();
     } else {
-      await stop();
+      await _pause();
     }
   }
 }
